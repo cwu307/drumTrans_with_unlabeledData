@@ -17,23 +17,24 @@ targetGenres = ['dance-club-play-songs',
                 'latin-songs',
                 'pop-songs',
                 'r-b-hip-hop-songs']
-parentFolder = '/Volumes/CW_MBP15/Datasets/unlabeledDrumDataset/activations/'
-savepath = './models/dnn_model.npy'
+#parentFolder = '/Volumes/CW_MBP15/Datasets/unlabeledDrumDataset/activations/'
+parentFolder = '../../unlabeledDrumDataset/activations/'
+savepath = './models/dnn_model.h5'
 
 '''
 ==== Define DNN model
 '''
 model = Sequential()
-model.add(Dense(1025, input_dim = 1025, init = 'normal', activation = 'relu'))
+model.add(Dense(units = 1025, input_dim = 1025, init = 'normal', activation = 'relu'))
 model.add(Dropout(0.5))
-model.add(Dense(512, init = 'uniform', activation = 'relu'))
+model.add(Dense(units = 512, init = 'uniform', activation = 'relu'))
 model.add(Dropout(0.5))
-model.add(Dense(128, init = 'uniform', activation = 'relu'))
+model.add(Dense(units = 128, init = 'uniform', activation = 'relu'))
 model.add(Dropout(0.5))
-model.add(Dense(32, init = 'uniform', activation = 'relu'))
+model.add(Dense(units = 32, init = 'uniform', activation = 'relu'))
 model.add(Dropout(0.5))
-model.add(Dense(3, init = 'uniform', activation = 'relu'))
-model.compile(optimizer = 'adam', loss='mse', metrics = ['mae'])
+model.add(Dense(units = 3, init = 'uniform', activation = 'relu'))
+model.compile(optimizer = 'rmsprop', loss='mse', metrics = ['mae'])
 
 
 '''
@@ -56,9 +57,9 @@ for method in targetPseudoLabels:
             '''
             ==== Training
             '''
-            model.fit(X, Y, nb_epoch = 1, batch_size = 32)
+            model.fit(X, Y, nb_epoch = 3, batch_size = 32)
 
 '''
 ==== Save the trained DNN model
 '''
-np.save(savepath, model)
+model.save(savepath)
