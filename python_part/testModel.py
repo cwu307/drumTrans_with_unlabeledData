@@ -16,13 +16,17 @@ targetDrummers = ['drummer1',
                 'drummer3']
 parentFolder = '../../unlabeledDrumDataset/evaluation_enst/STFT/'
 saveParentFolder = '../../unlabeledDrumDataset/evaluation_enst/Activations/'
-modelpath = './models/dnn_model.h5'
+modelpath_hh = './models/dnn_model_hh.h5'
+modelpath_kd = './models/dnn_model_kd.h5'
+modelpath_sd = './models/dnn_model_sd.h5'
 
 '''
 ==== File IO + testing
 '''
 
-model = load_model(modelpath)
+model_hh = load_model(modelpath_hh)
+model_kd = load_model(modelpath_kd)
+model_sd = load_model(modelpath_sd)
 
 for drummer in targetDrummers:
     #==== get STFT
@@ -32,6 +36,7 @@ for drummer in targetDrummers:
 
 
     for i in range(0, len(stftFilePathList)):
+        print 'test on file %f' % i
         filename = stftFilePathList[i][-11:-4]
         savepath = saveFolder + filename
         tmp = loadmat(stftFilePathList[i])
@@ -40,6 +45,10 @@ for drummer in targetDrummers:
         '''
         ==== Testing
         '''
-        Y = model.predict(X, batch_size = 32)
-        np.save(savepath, Y)
+        Y_hh = model_hh.predict(X, batch_size = 32)
+        Y_kd = model_kd.predict(X, batch_size=32)
+        Y_sd = model_sd.predict(X, batch_size=32)
+        all = [Y_hh, Y_kd, Y_sd]
+        np.save(savepath, all)
+
 

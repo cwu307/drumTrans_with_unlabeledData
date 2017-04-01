@@ -6,7 +6,7 @@ import numpy as np
 from FileUtil import getFilePathList
 from scipy.io import loadmat
 from keras.models import Sequential
-from keras.layers import Dense, Dropout
+from keras.layers import Dense, Dropout, Activation
 
 '''
 ==== User input
@@ -17,25 +17,37 @@ targetGenres = ['dance-club-play-songs',
                 'latin-songs',
                 'pop-songs',
                 'r-b-hip-hop-songs']
-#parentFolder = '/Volumes/CW_MBP15/Datasets/unlabeledDrumDataset/activations/'
 parentFolder = '../../unlabeledDrumDataset/activations/'
-savepath = './models/dnn_model.h5'
+savepath_hh = './models/dnn_model_hh.h5'
+savepath_kd = './models/dnn_model_kd.h5'
+savepath_sd = './models/dnn_model_sd.h5'
 
 '''
 ==== Define DNN model
 '''
-model = Sequential()
-model.add(Dense(units = 1025, input_dim = 1025, init = 'normal', activation = 'relu'))
-model.add(Dropout(0.5))
-model.add(Dense(units = 512, init = 'uniform', activation = 'relu'))
-model.add(Dropout(0.5))
-model.add(Dense(units = 128, init = 'uniform', activation = 'relu'))
-model.add(Dropout(0.5))
-model.add(Dense(units = 32, init = 'uniform', activation = 'relu'))
-model.add(Dropout(0.5))
-model.add(Dense(units = 3, init = 'uniform', activation = 'relu'))
-model.compile(optimizer = 'rmsprop', loss='mse', metrics = ['mae'])
 
+def createModel():
+    model = Sequential()
+    model.add(Dense(units = 1025, input_dim = 1025))
+    model.add(Activation('relu'))
+    model.add(Dropout(0.5))
+    model.add(Dense(units = 512))
+    model.add(Activation('sigmoid'))
+    model.add(Dropout(0.5))
+    model.add(Dense(units = 512))
+    model.add(Activation('sigmoid'))
+    model.add(Dropout(0.5))
+    model.add(Dense(units = 32))
+    model.add(Activation('relu'))
+    model.add(Dropout(0.5))
+    model.add(Dense(units = 1))
+    model.add(Activation('relu'))
+    model.compile(optimizer = 'rmsprop', loss='mean_squared_error', metrics = ['mae'])
+    return model
+
+model_hh = createModel()
+model_kd = createModel()
+model_sd = createModel()
 
 '''
 ==== File IO + training
@@ -57,9 +69,16 @@ for method in targetPseudoLabels:
             '''
             ==== Training
             '''
-            model.fit(X, Y, nb_epoch = 3, batch_size = 32)
+            print '==== training HH ====\n'
+            model_hh.fit(X, Y[:, 0], epochs = 3, batch_size = 32)
+            print '==== training KD ====\n'
+            model_kd.fit(X, Y[:, 1], epochs = 3, batch_size = 32)
+            print '==== training SD ====\n'
+            model_sd.fit(X, Y[:, 2], epochs = 3, batch_size = 32)
 
 '''
 ==== Save the trained DNN model
 '''
-model.save(savepath)
+model_hh.save(savepath_hh)
+model_kd.save(savepath_kd)
+model_sd.save(savepath_sd)
