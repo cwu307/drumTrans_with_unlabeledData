@@ -17,7 +17,8 @@ targetGenres = ['dance-club-play-songs',
                 'latin-songs',
                 'pop-songs',
                 'r-b-hip-hop-songs']
-parentFolder = '../../unlabeledDrumDataset/activations/'
+#parentFolder = '../../unlabeledDrumDataset/activations/'
+parentFolder = '/Volumes/CW_MBP15/Datasets/unlabeledDrumDataset/activations/'
 savepath_hh = './models/dnn_model_hh.h5'
 savepath_kd = './models/dnn_model_kd.h5'
 savepath_sd = './models/dnn_model_sd.h5'
@@ -60,21 +61,22 @@ for method in targetPseudoLabels:
         pseudoLabelPath = parentFolder + method + '/' + genre + '/'
         pseudoLabelFilePathList = getFilePathList(pseudoLabelPath, 'mat')
 
-        for i in range(0, len(stftFilePathList)):
+        for i in range(0, 1): #len(stftFilePathList)):
             tmp = loadmat(stftFilePathList[i])
             X = np.ndarray.transpose(tmp['X'])
             tmp = loadmat(pseudoLabelFilePathList[i])
             Y = np.ndarray.transpose(tmp['HD'])
             assert (len(X) == len(Y)), 'dimensionality mismatch between STFT and Pseudo-Labels!'
+
             '''
             ==== Training
             '''
             print '==== training HH ====\n'
-            model_hh.fit(X, Y[:, 0], epochs = 3, batch_size = 32)
+            model_hh.fit(X, Y[:, 0], epochs = 1, batch_size = 32)
             print '==== training KD ====\n'
-            model_kd.fit(X, Y[:, 1], epochs = 3, batch_size = 32)
+            model_kd.fit(X, Y[:, 1], epochs = 1, batch_size = 32)
             print '==== training SD ====\n'
-            model_sd.fit(X, Y[:, 2], epochs = 3, batch_size = 32)
+            model_sd.fit(X, Y[:, 2], epochs = 1, batch_size = 32)
 
 '''
 ==== Save the trained DNN model
