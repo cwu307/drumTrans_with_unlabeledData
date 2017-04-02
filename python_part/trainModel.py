@@ -3,7 +3,7 @@ DNN playground using KERAS
 CW @ GTCMT 2017
 '''
 import numpy as np
-from FileUtil import getFilePathList
+from FileUtil import getFilePathList, scaleData
 from scipy.io import loadmat
 from keras.models import Sequential
 from keras.layers import Dense, Dropout, Activation
@@ -33,17 +33,14 @@ def createModel():
     model.add(Activation('relu'))
     model.add(Dropout(0.5))
     model.add(Dense(units = 512))
-    model.add(Activation('sigmoid'))
-    model.add(Dropout(0.5))
-    model.add(Dense(units = 512))
-    model.add(Activation('sigmoid'))
+    model.add(Activation('relu'))
     model.add(Dropout(0.5))
     model.add(Dense(units = 32))
     model.add(Activation('relu'))
     model.add(Dropout(0.5))
     model.add(Dense(units = 1))
-    model.add(Activation('relu'))
-    model.compile(optimizer = 'rmsprop', loss='mean_squared_error', metrics = ['mae'])
+    model.add(Activation('sigmoid'))
+    model.compile(optimizer = 'rmsprop', loss='mse', metrics = ['mae'])
     return model
 
 model_hh = createModel()
@@ -72,11 +69,11 @@ for method in targetPseudoLabels:
             ==== Training
             '''
             print '==== training HH ====\n'
-            model_hh.fit(X, Y[:, 0], epochs = 1, batch_size = 32)
+            model_hh.fit(X, scaleData(Y[:, 0]), epochs = 1, batch_size = 32)
             print '==== training KD ====\n'
-            model_kd.fit(X, Y[:, 1], epochs = 1, batch_size = 32)
+            model_kd.fit(X, scaleData(Y[:, 1]), epochs = 1, batch_size = 32)
             print '==== training SD ====\n'
-            model_sd.fit(X, Y[:, 2], epochs = 1, batch_size = 32)
+            model_sd.fit(X, scaleData(Y[:, 2]), epochs = 1, batch_size = 32)
 
 '''
 ==== Save the trained DNN model
