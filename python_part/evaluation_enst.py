@@ -4,7 +4,7 @@ CW @ GTCMT 2017
 '''
 import numpy as np
 from FileUtil import getFilePathList
-from transcriptUtil import medianThreshold, findPeaks, getIndividualOnset
+from transcriptUtil import medianThreshold, findPeaks, getIndividualOnset, showAllResults
 from mir_eval.onset import f_measure
 from scipy.io import loadmat
 
@@ -15,10 +15,11 @@ targetDrummers = ['drummer1',
                 'drummer2',
                 'drummer3']
 parentFolder     = '../../unlabeledDrumDataset/evaluation_enst/Activations/'
-annotationFolder = '../../unlabeledDrumDataset/evaluation_enst/Evaluation_results/'
+annotationFolder = '../../unlabeledDrumDataset/evaluation_enst/Annotations/'
+savepath = '../../unlabeledDrumDataset/evaluation_enst/Evaluation_results/enst_all_results.npy'
 # parentFolder     = '/Volumes/CW_MBP15/Datasets/unlabeledDrumDataset/evaluation_enst/Activations/'
 # annotationFolder = '/Volumes/CW_MBP15/Datasets/unlabeledDrumDataset/evaluation_enst/Annotations/'
-savepath = '/Volumes/CW_MBP15/Datasets/unlabeledDrumDataset/evaluation_enst/Evaluation_results/enst_all_results.npy'
+# savepath = '/Volumes/CW_MBP15/Datasets/unlabeledDrumDataset/evaluation_enst/Evaluation_results/enst_all_results.npy'
 
 #==== define parameters
 hopSize = 512.00
@@ -68,6 +69,13 @@ for drummer in targetDrummers:
         bd_result = f_measure(ref_bd, onsetsInSec_bd, window=0.05)
         sd_result = f_measure(ref_sd, onsetsInSec_sd, window=0.05)
 
+        print 'hh_results\n'
+        print hh_result
+        print 'bd_results\n'
+        print bd_result
+        print 'sd_results\n'
+        print sd_result
+
         #==== keep all results
         hh_all_results.append(hh_result)
         bd_all_results.append(bd_result)
@@ -77,4 +85,4 @@ for drummer in targetDrummers:
     all_results = [hh_all_results, bd_all_results, sd_all_results]
     np.save(savepath, all_results)
 
-
+showAllResults(savepath)

@@ -96,5 +96,33 @@ def getIndividualOnset(onsets, drums):
     return onsets_hh.ravel(), onsets_bd.ravel(), onsets_sd.ravel()
 
 
+def showAllResults(resultFilePath):
+    all_results = np.load(resultFilePath)
+    hh_results = all_results[0]
+    bd_results = all_results[1]
+    sd_results = all_results[2]
+
+    print '==== hh results ====\n'
+    avg_hh = np.mean(hh_results, 0)
+    print 'avg f-measure = %f, avg precision = %f, avg recall = %f\n' % (avg_hh[0], avg_hh[1], avg_hh[2])
+    print '==== bd results ====\n'
+    avg_bd = np.mean(bd_results, 0)
+    print 'avg f-measure = %f, avg precision = %f, avg recall = %f\n' % (avg_bd[0], avg_bd[1], avg_bd[2])
+    print '==== sd results ====\n'
+    avg_sd = np.mean(sd_results, 0)
+    print 'avg f-measure = %f, avg precision = %f, avg recall = %f\n' % (avg_sd[0], avg_sd[1], avg_sd[2])
+    print '==== average across instruments ====\n'
+    print 'avg avg f-measure = %f\n' % np.mean([avg_hh[0], avg_bd[0], avg_sd[0]])
+    print 'avg avg precision = %f\n' % np.mean([avg_hh[1], avg_bd[1], avg_sd[1]])
+    print 'avg avg recall    = %f\n' % np.mean([avg_hh[2], avg_bd[2], avg_sd[2]])
+
+    return
+
+
+
+
+
+
+
 
 

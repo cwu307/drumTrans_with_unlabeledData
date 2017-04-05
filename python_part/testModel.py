@@ -14,10 +14,10 @@ from keras.models import load_model
 targetDrummers = ['drummer1',
                 'drummer2',
                 'drummer3']
-# parentFolder     = '../../unlabeledDrumDataset/evaluation_enst/STFT/'
-# saveParentFolder = '../../unlabeledDrumDataset/evaluation_enst/Activations/'
-parentFolder     = '/Volumes/CW_MBP15/Datasets/unlabeledDrumDataset/evaluation_enst/STFT/'
-saveParentFolder = '/Volumes/CW_MBP15/Datasets/unlabeledDrumDataset/evaluation_enst/Activations/'
+parentFolder     = '../../unlabeledDrumDataset/evaluation_enst/STFT/'
+saveParentFolder = '../../unlabeledDrumDataset/evaluation_enst/Activations/'
+# parentFolder     = '/Volumes/CW_MBP15/Datasets/unlabeledDrumDataset/evaluation_enst/STFT/'
+# saveParentFolder = '/Volumes/CW_MBP15/Datasets/unlabeledDrumDataset/evaluation_enst/Activations/'
 modelpath_hh = './models/dnn_model_hh.h5'
 modelpath_kd = './models/dnn_model_kd.h5'
 modelpath_sd = './models/dnn_model_sd.h5'
