@@ -9,13 +9,11 @@ nmfDrumPath = '/Users/cw/Documents/CW_FILES/02_Github_repo/GTCMT/NmfDrumToolbox/
 addpath(nmfDrumPath);
 
 %% load target file
-datasetPath = '/Volumes/CW_MBP15/Datasets/unlabeledDrumDataset/audio/';
-saveFolderPath = '/Volumes/CW_MBP15/Datasets/unlabeledDrumDataset/activations/';
-selectedGenres = {'dance-club-play-songs';
-                  'hot-mainstream-rock-tracks'
-                  'latin-songs';
-                  'pop-songs';
-                  'r-b-hip-hop-songs'};
+datasetPath = '/Users/cw/Documents/CW_FILES/04_Datasets/Database2/CW_ENST_minus_one_wet_new_ratio/';
+saveFolderPath = '/Volumes/CW_MBP15/Datasets/unlabeledDrumDataset/evaluation_enst/';
+selectedDrummer = {'drummer1';
+                  'drummer2';
+                  'drummer3'};
               
 %% define parameters        
 pfnmf_rank = 50;
@@ -35,21 +33,19 @@ template_200drums = template;
  
 
 tic;
-for g = 5:length(selectedGenres)
-    subpath = [datasetPath, selectedGenres{g}];
-    subdata = recursiveFileList(subpath, 'mp3');
+for g = 1:length(selectedDrummer)
+    subpath = [datasetPath, selectedDrummer{g}, '/', 'audio'];
+    subdata = recursiveFileList(subpath, 'wav');
     
     %==== create dir
-    savepath_enst = [saveFolderPath, 'enst/', selectedGenres{g}];
+    savepath_enst = [saveFolderPath, 'enst/', selectedDrummer{g}];
     mkdir(savepath_enst);
-    savepath_smt = [saveFolderPath, 'smt/', selectedGenres{g}];
+    savepath_smt = [saveFolderPath, 'smt/', selectedDrummer{g}];
     mkdir(savepath_smt);
-    savepath_200drums = [saveFolderPath, '200drums/', selectedGenres{g}];
+    savepath_200drums = [saveFolderPath, '200drums/', selectedDrummer{g}];
     mkdir(savepath_200drums);
-    savepath_stft = [saveFolderPath, 'STFT/', selectedGenres{g}];
-    mkdir(savepath_stft);
     
-    for i = 18:30 %only take the first 100 songs
+    for i = 1:length(subdata) %only take the first 100 songs
         fprintf('Processing genre %g, song %g\n', g, i);
         %==== read audio file and down-mixing + resampling
         [x, fs] = audioread(subdata(i).path);
@@ -74,8 +70,6 @@ for g = 5:length(selectedGenres)
         [~, HD, ~, ~, ~] = PfNmf(X, param.WD, [], [], [], pfnmf_rank, 0);
         save([savepath_200drums, '/', subdata(i).name(1:end-3), 'mat'], 'HD');
         
-        %==== STFT
-        save([savepath_stft, '/', subdata(i).name(1:end-3), 'mat'], 'X');
     end
 end
 toc;
