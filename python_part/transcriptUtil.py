@@ -29,6 +29,20 @@ def medianThreshold(nvt, order, offset):
 input: 
     nvt: N by 1 float vector, novelty function
     thresCurve: N by 1 float vector, adaptive threshold curve
+output:
+    nvt: N by 1 float vector, thresholded novelty function
+'''
+def thresNvt(nvt, thresCurve):
+    numBlocks = len(nvt)
+    for i in range(0, numBlocks):
+        if nvt[i] <= thresCurve[i]:
+            nvt[i] = 0
+    return nvt
+
+'''
+input: 
+    nvt: N by 1 float vector, novelty function
+    thresCurve: N by 1 float vector, adaptive threshold curve
     fs: int, sampling frequency
     hopSize: int, hop size of the nvt function
 output:
@@ -43,11 +57,14 @@ def findPeaks(nvt, thresCurve, fs, hopSize):
         if nvt[i] <= thresCurve[i]:
             nvt[i] = 0
     order_30ms = int(round(0.03/hopTime))
-    onsetInBlock, dump = argrelmax(np.array(nvt), order= order_30ms)
+    onsetInBlock,  = argrelmax(np.array(nvt), order= order_30ms)
     if len(onsetInBlock) > 0:
         onsetInSec  = timeStamp[onsetInBlock]
     else:
         onsetInSec  = []
+    onsetInBlock = np.array(onsetInBlock)
+    onsetInSec = np.array(onsetInSec)
+
     return onsetInBlock, onsetInSec
 
 '''

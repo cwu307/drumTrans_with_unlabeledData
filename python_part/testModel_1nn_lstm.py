@@ -18,7 +18,7 @@ parentFolder     = '../../unlabeledDrumDataset/evaluation_enst/STFT/'
 saveParentFolder = '../../unlabeledDrumDataset/evaluation_enst/Activations/'
 # parentFolder     = '/Volumes/CW_MBP15/Datasets/unlabeledDrumDataset/evaluation_enst/STFT/'
 # saveParentFolder = '/Volumes/CW_MBP15/Datasets/unlabeledDrumDataset/evaluation_enst/Activations/'
-modelpath = './models/dnn_model_1nn_100songs_bs64_ep50.h5'
+modelpath = './models/dnn_model_1nn_lstm_rc.h5'
 
 '''
 ==== File IO + testing
@@ -39,11 +39,11 @@ for drummer in targetDrummers:
         savepath = saveFolder + filename
         tmp = loadmat(stftFilePathList[i])
         X = np.ndarray.transpose(tmp['X'])
-
+        X = np.reshape(X, (X.shape[0], 1, X.shape[1]))
         '''
         ==== Testing
         '''
-        Y = model.predict(X, batch_size = 32)
+        Y = model.predict(X, batch_size = 64)
         all = [Y[:, 0], Y[:, 1], Y[:, 2]]
         np.save(savepath, all)
 

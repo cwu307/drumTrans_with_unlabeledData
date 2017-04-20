@@ -16,7 +16,7 @@ targetDrummers = ['drummer1',
                 'drummer3']
 parentFolder     = '../../unlabeledDrumDataset/evaluation_enst/Activations/'
 annotationFolder = '../../unlabeledDrumDataset/evaluation_enst/Annotations/'
-savepath = '../../unlabeledDrumDataset/evaluation_enst/Evaluation_results/enst_all_results.npy'
+savepath = '../../unlabeledDrumDataset/evaluation_enst/Evaluation_results/enst_all_results_1nn_50songs_bs64_cqt.npy'
 # parentFolder     = '/Volumes/CW_MBP15/Datasets/unlabeledDrumDataset/evaluation_enst/Activations/'
 # annotationFolder = '/Volumes/CW_MBP15/Datasets/unlabeledDrumDataset/evaluation_enst/Annotations/'
 # savepath = '/Volumes/CW_MBP15/Datasets/unlabeledDrumDataset/evaluation_enst/Evaluation_results/enst_all_results.npy'
