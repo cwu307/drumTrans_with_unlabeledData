@@ -14,7 +14,7 @@ from keras.optimizers import adam, rmsprop
 ==== User input
 '''
 # targetPseudoLabels = ['200drums', 'enst', 'smt']
-targetPseudoLabels = ['200drums', 'smt']
+targetPseudoLabels = ['smt']
 targetGenres = ['dance-club-play-songs',
                 'hot-mainstream-rock-tracks',
                 'latin-songs',
@@ -22,7 +22,7 @@ targetGenres = ['dance-club-play-songs',
                 'r-b-hip-hop-songs']
 parentFolder = '../../unlabeledDrumDataset/activations/'
 # parentFolder = '/Volumes/CW_MBP15/Datasets/unlabeledDrumDataset/activations/'
-savepath = './models/dnn_model_1nn_50songs_bs640_CQT_enst_2teachers.h5'
+savepath = './models/dnn_model_1nn_50songs_bs640_CQT_smt.h5'
 
 '''
 ==== Define DNN model
