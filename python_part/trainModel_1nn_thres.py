@@ -9,11 +9,13 @@ from scipy.io import loadmat
 from keras.models import Sequential
 from keras.layers import Dense, Dropout, Activation, normalization, LSTM
 from keras.callbacks import TensorBoard
+from keras.optimizers import adam, rmsprop, sgd
 
 '''
 ==== User input
 '''
-targetPseudoLabels = ['200drums', 'enst', 'smt']
+# targetPseudoLabels = ['200drums', 'enst', 'smt']
+targetPseudoLabels = ['enst']
 targetGenres = ['dance-club-play-songs',
                 'hot-mainstream-rock-tracks',
                 'latin-songs',
@@ -21,11 +23,12 @@ targetGenres = ['dance-club-play-songs',
                 'r-b-hip-hop-songs']
 parentFolder = '../../unlabeledDrumDataset/activations/'
 # parentFolder = '/Volumes/CW_MBP15/Datasets/unlabeledDrumDataset/activations/'
-savepath = './models/dnn_model_1nn_50songs_bs64_thres.h5'
+savepath = './models/dnn_model_1nn_50songs_bs640_thres_median.h5'
 
 '''
 ==== Define DNN model
 '''
+optimizer = rmsprop(lr=0.001)
 
 def createModel():
     model = Sequential()
@@ -38,7 +41,7 @@ def createModel():
     model.add(Activation('relu'))
     model.add(Dense(units = 3))
     model.add(Activation('sigmoid'))
-    model.compile(optimizer = 'rmsprop', loss='binary_crossentropy', metrics = ['mae', 'accuracy'])
+    model.compile(optimizer = optimizer, loss='mse', metrics = ['mae'])
     return model
 
 model = createModel()
@@ -68,7 +71,7 @@ for method in targetPseudoLabels:
             hopSize = 512.00
             fs = 44100.00
             order = round(0.1 / (hopSize / fs))
-            offsets = [0.06, 0.12, 0.24]
+            offsets = [0.12]
             for j in range(0, len(offsets)):
 
                 offset = offsets[j]
@@ -83,26 +86,26 @@ for method in targetPseudoLabels:
                 # thresNvt_bd = thresNvt(Y[:, 1], thresCurve_bd)
                 # thresNvt_sd = thresNvt(Y[:, 2], thresCurve_sd)
 
-                dump, onsetInSec_hh = findPeaks(Y[:, 0], thresCurve_hh, fs, hopSize)
-                dump, onsetInSec_bd = findPeaks(Y[:, 1], thresCurve_bd, fs, hopSize)
-                dump, onsetInSec_sd = findPeaks(Y[:, 2], thresCurve_sd, fs, hopSize)
-
-                onsetInBinary_hh = onset2BinaryVector(onsetInSec_hh, len(Y[:, 0]), hopSize, fs)
-                onsetInBinary_bd = onset2BinaryVector(onsetInSec_bd, len(Y[:, 1]), hopSize, fs)
-                onsetInBinary_sd = onset2BinaryVector(onsetInSec_sd, len(Y[:, 2]), hopSize, fs)
+                # dump, onsetInSec_hh = findPeaks(Y[:, 0], thresCurve_hh, fs, hopSize)
+                # dump, onsetInSec_bd = findPeaks(Y[:, 1], thresCurve_bd, fs, hopSize)
+                # dump, onsetInSec_sd = findPeaks(Y[:, 2], thresCurve_sd, fs, hopSize)
+                #
+                # onsetInBinary_hh = onset2BinaryVector(onsetInSec_hh, len(Y[:, 0]), hopSize, fs)
+                # onsetInBinary_bd = onset2BinaryVector(onsetInSec_bd, len(Y[:, 1]), hopSize, fs)
+                # onsetInBinary_sd = onset2BinaryVector(onsetInSec_sd, len(Y[:, 2]), hopSize, fs)
 
                 '''
                 ==== Training
                 '''
-                # [y_hh_scaled, dump, dump] = scaleData(thresNvt_hh)
-                # [y_kd_scaled, dump, dump] = scaleData(thresNvt_bd)
-                # [y_sd_scaled, dump, dump] = scaleData(thresNvt_sd)
+                [y_hh_scaled, dump, dump] = scaleData(thresCurve_hh)
+                [y_kd_scaled, dump, dump] = scaleData(thresCurve_bd)
+                [y_sd_scaled, dump, dump] = scaleData(thresCurve_sd)
+                y_all = np.concatenate((y_hh_scaled, y_kd_scaled, y_sd_scaled), axis=1)
 
-                # y_all = np.concatenate((y_hh_scaled, y_kd_scaled, y_sd_scaled), axis=1)
+                #y_all = np.concatenate((onsetInBinary_hh, onsetInBinary_bd, onsetInBinary_sd), axis=1)
 
-                y_all = np.concatenate((onsetInBinary_hh, onsetInBinary_bd, onsetInBinary_sd), axis=1)
                 print '==== training ====\n'
-                model.fit(X, y_all, epochs = 30, batch_size = 64, callbacks=[tbCallBack])
+                model.fit(X, y_all, epochs = 30, batch_size = 640, callbacks=[tbCallBack])
 
 '''
 ==== Save the trained DNN model

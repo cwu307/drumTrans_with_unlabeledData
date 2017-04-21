@@ -10,7 +10,7 @@ filepath = '/Users/chih-wei/Desktop/chi/0_cw_workspace/unlabeledDrumDataset/eval
 
 all = np.load(filepath)
 print len(all[0])
-plt.plot(all[1])
+plt.plot(all[2])
 plt.xlabel('block index')
 plt.ylabel('activity')
 plt.show()

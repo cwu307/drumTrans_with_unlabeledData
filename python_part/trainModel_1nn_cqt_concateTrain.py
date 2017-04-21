@@ -51,8 +51,12 @@ tbCallBack = TensorBoard(log_dir='./graph/', histogram_freq=0, write_graph=True,
 
 
 '''
-==== File IO + training
+==== File IO + file concatenation
 '''
+
+X = np.ndarray((0, 121))
+Y = np.ndarray((0, 3))
+
 for method in targetPseudoLabels:
     for genre in targetGenres:
         #==== get STFT & pseudo label
@@ -61,29 +65,37 @@ for method in targetPseudoLabels:
         pseudoLabelPath = parentFolder + method + '/' + genre + '/'
         pseudoLabelFilePathList = getFilePathList(pseudoLabelPath, 'mat')
 
-        for i in range(0, 30): #len(stftFilePathList)):
+
+        for i in range(0, 10): #len(stftFilePathList)):
             tmp = loadmat(cqtFilePathList[i])
-            X = np.ndarray.transpose(tmp['Xcqt'])
+            X_song = np.ndarray.transpose(tmp['Xcqt'])
             tmp = loadmat(pseudoLabelFilePathList[i])
-            Y = np.ndarray.transpose(tmp['HD'])
-            assert (len(X) == len(Y)), 'dimensionality mismatch between CQT and Pseudo-Labels!'
+            Y_song = np.ndarray.transpose(tmp['HD'])
+            assert (len(X_song) == len(Y_song)), 'dimensionality mismatch between CQT and Pseudo-Labels!'
 
             '''
-            ==== Training
+            ==== Concatenating matrices
             '''
-            [y_hh_scaled, dump, dump] = scaleData(Y[:, 0])
-            [y_kd_scaled, dump, dump] = scaleData(Y[:, 1])
-            [y_sd_scaled, dump, dump] = scaleData(Y[:, 2])
-            y_all = np.concatenate((y_hh_scaled, y_kd_scaled, y_sd_scaled), axis=1)
-            print '==== training ====\n'
+            X = np.concatenate((X, X_song), axis=0)
+            Y = np.concatenate((Y, Y_song), axis=0)
 
-            #==== feeding CQT and delta CQT
-            X_diff = np.diff(X, axis=0)
-            finalRow = np.zeros((1, np.size(X, 1)))
-            X_diff = np.concatenate((X_diff, finalRow), axis=0)
-            X_all = np.concatenate((X, X_diff), axis=1)
 
-            model.fit(X_all, y_all, epochs = 50, batch_size = 640, callbacks=[tbCallBack], shuffle=False)
+'''
+==== Training
+'''
+[y_hh_scaled, dump, dump] = scaleData(Y[:, 0])
+[y_kd_scaled, dump, dump] = scaleData(Y[:, 1])
+[y_sd_scaled, dump, dump] = scaleData(Y[:, 2])
+y_all = np.concatenate((y_hh_scaled, y_kd_scaled, y_sd_scaled), axis=1)
+print '==== training ====\n'
+
+#==== feeding CQT and delta CQT
+X_diff = np.diff(X, axis=0)
+finalRow = np.zeros((1, np.size(X, 1)))
+X_diff = np.concatenate((X_diff, finalRow), axis=0)
+X_all = np.concatenate((X, X_diff), axis=1)
+
+model.fit(X_all, y_all, epochs = 50, batch_size = 640, callbacks=[tbCallBack], shuffle=False)
 
 '''
 ==== Save the trained DNN model

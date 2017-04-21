@@ -8,11 +8,14 @@ from scipy.io import loadmat
 from keras.models import Sequential
 from keras.layers import Dense, Dropout, Activation, normalization, LSTM
 from keras.callbacks import TensorBoard
+from keras.optimizers import adam, rmsprop, sgd
+from keras import regularizers
 
 '''
 ==== User input
 '''
-targetPseudoLabels = ['200drums', 'enst', 'smt']
+# targetPseudoLabels = ['200drums', 'enst', 'smt']
+targetPseudoLabels = ['enst']
 targetGenres = ['dance-club-play-songs',
                 'hot-mainstream-rock-tracks',
                 'latin-songs',
@@ -20,11 +23,12 @@ targetGenres = ['dance-club-play-songs',
                 'r-b-hip-hop-songs']
 parentFolder = '../../unlabeledDrumDataset/activations/'
 # parentFolder = '/Volumes/CW_MBP15/Datasets/unlabeledDrumDataset/activations/'
-savepath = './models/dnn_model_1nn_100songs_bs64_ep50.h5'
+savepath = './models/dnn_model_1nn_50songs_bs640_ep30_drop.h5'
 
 '''
 ==== Define DNN model
 '''
+optimizer = rmsprop(lr=0.001)
 
 def createModel():
     model = Sequential()
@@ -32,12 +36,14 @@ def createModel():
     model.add(normalization.BatchNormalization())
     model.add(Activation('tanh'))
     model.add(Dense(units = 512))
+    model.add(Dropout(0.15))
     model.add(Activation('relu'))
     model.add(Dense(units = 32))
+    model.add(Dropout(0.15))
     model.add(Activation('relu'))
     model.add(Dense(units = 3))
     model.add(Activation('sigmoid'))
-    model.compile(optimizer = 'rmsprop', loss='mse', metrics = ['mae'])
+    model.compile(optimizer = optimizer, loss='mse', metrics = ['mae'])
     return model
 
 model = createModel()
@@ -54,7 +60,7 @@ for method in targetPseudoLabels:
         pseudoLabelPath = parentFolder + method + '/' + genre + '/'
         pseudoLabelFilePathList = getFilePathList(pseudoLabelPath, 'mat')
 
-        for i in range(0, 20): #len(stftFilePathList)):
+        for i in range(0, 10): #len(stftFilePathList)):
             tmp = loadmat(stftFilePathList[i])
             X = np.ndarray.transpose(tmp['X'])
             tmp = loadmat(pseudoLabelFilePathList[i])
@@ -69,7 +75,7 @@ for method in targetPseudoLabels:
             [y_sd_scaled, dump, dump] = scaleData(Y[:, 2])
             y_all = np.concatenate((y_hh_scaled, y_kd_scaled, y_sd_scaled), axis=1)
             print '==== training ====\n'
-            model.fit(X, y_all, epochs = 50, batch_size = 64, callbacks=[tbCallBack])
+            model.fit(X, y_all, epochs = 30, batch_size = 640, callbacks=[tbCallBack])
 
 '''
 ==== Save the trained DNN model

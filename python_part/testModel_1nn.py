@@ -18,7 +18,7 @@ parentFolder     = '../../unlabeledDrumDataset/evaluation_enst/STFT/'
 saveParentFolder = '../../unlabeledDrumDataset/evaluation_enst/Activations/'
 # parentFolder     = '/Volumes/CW_MBP15/Datasets/unlabeledDrumDataset/evaluation_enst/STFT/'
 # saveParentFolder = '/Volumes/CW_MBP15/Datasets/unlabeledDrumDataset/evaluation_enst/Activations/'
-modelpath = './models/dnn_model_1nn_100songs_bs64_ep50.h5'
+modelpath = './models/dnn_model_1nn_50songs_bs640_ep30_drop.h5'
 
 '''
 ==== File IO + testing
@@ -43,7 +43,7 @@ for drummer in targetDrummers:
         '''
         ==== Testing
         '''
-        Y = model.predict(X, batch_size = 32)
+        Y = model.predict(X, batch_size = 640)
         all = [Y[:, 0], Y[:, 1], Y[:, 2]]
         np.save(savepath, all)
 
