@@ -18,7 +18,7 @@ parentFolder     = '../../unlabeledDrumDataset/evaluation_enst/STFT/'
 saveParentFolder = '../../unlabeledDrumDataset/evaluation_enst/Activations/'
 # parentFolder     = '/Volumes/CW_MBP15/Datasets/unlabeledDrumDataset/evaluation_enst/STFT/'
 # saveParentFolder = '/Volumes/CW_MBP15/Datasets/unlabeledDrumDataset/evaluation_enst/Activations/'
-modelpath = './models/dnn_model_1nn_50songs_bs640_ep30_enst_con.h5'
+modelpath = './models/dnn_model_1nn_stft.h5'
 
 '''
 ==== File IO + testing

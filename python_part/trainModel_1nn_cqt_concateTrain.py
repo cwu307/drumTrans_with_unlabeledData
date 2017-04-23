@@ -7,27 +7,28 @@ from FileUtil import getFilePathList, scaleData
 from scipy.io import loadmat
 from keras.models import Sequential
 from keras.layers import Dense, Dropout, Activation, normalization, LSTM
-from keras.callbacks import TensorBoard
+from keras.callbacks import TensorBoard, EarlyStopping
 from keras.optimizers import adam, rmsprop
 
 '''
 ==== User input
 '''
-targetPseudoLabels = ['200drums', 'enst', 'smt']
-# targetPseudoLabels = ['smt']
+# targetPseudoLabels = ['200drums', 'enst', 'smt']
+targetPseudoLabels = ['smt', '200drums']
 targetGenres = ['dance-club-play-songs',
                 'hot-mainstream-rock-tracks',
                 'latin-songs',
                 'pop-songs',
                 'r-b-hip-hop-songs']
+# targetGenres = ['hot-mainstream-rock-tracks']
 parentFolder = '../../unlabeledDrumDataset/activations/'
 # parentFolder = '/Volumes/CW_MBP15/Datasets/unlabeledDrumDataset/activations/'
-savepath = './models/dnn_model_1nn_50songs_bs640_CQT_all.h5'
+savepath = './models/dnn_model_cqt_rms.h5'
 
 '''
 ==== Define DNN model
 '''
-rmspropOpt = rmsprop(lr=0.001)
+optimizer = rmsprop(lr=0.001)
 
 def createModel():
     model = Sequential()
@@ -38,17 +39,15 @@ def createModel():
     model.add(normalization.BatchNormalization())
     model.add(Activation('relu'))
     model.add(Dense(units = 32))
-    #model.add(normalization.BatchNormalization())
     model.add(Activation('relu'))
     model.add(Dense(units = 3))
-    #model.add(normalization.BatchNormalization())
     model.add(Activation('sigmoid'))
-    model.compile(optimizer = rmspropOpt, loss='mse', metrics = ['mae'])
+    model.compile(optimizer = optimizer, loss='mse', metrics = ['mae'])
     return model
 
 model = createModel()
 tbCallBack = TensorBoard(log_dir='./graph/', histogram_freq=0, write_graph=True, write_images=True)
-
+# earlyStopCallBack = EarlyStopping(monitor='loss', min_delta=1e-6, patience=5)
 
 '''
 ==== File IO + file concatenation
@@ -65,8 +64,7 @@ for method in targetPseudoLabels:
         pseudoLabelPath = parentFolder + method + '/' + genre + '/'
         pseudoLabelFilePathList = getFilePathList(pseudoLabelPath, 'mat')
 
-
-        for i in range(0, 10): #len(stftFilePathList)):
+        for i in range(0, 150): #len(stftFilePathList)):
             tmp = loadmat(cqtFilePathList[i])
             X_song = np.ndarray.transpose(tmp['Xcqt'])
             tmp = loadmat(pseudoLabelFilePathList[i])
