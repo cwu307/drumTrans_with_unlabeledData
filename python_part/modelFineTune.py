@@ -20,7 +20,7 @@ targetGenres = ['dance-club-play-songs',
                 'r-b-hip-hop-songs']
 parentFolder = '../../unlabeledDrumDataset/activations/'
 # parentFolder = '/Volumes/CW_MBP15/Datasets/unlabeledDrumDataset/activations/'
-modelpath = './models/dnn_model_1nn_50songs_bs640_CQT_smt_200_150ep.h5'
+modelpath = './models/dnn_model_cqt_rms.h5'
 
 
 model = load_model(modelpath)
@@ -28,8 +28,9 @@ tbCallBack = TensorBoard(log_dir='./graph/', histogram_freq=0, write_graph=True,
 #earlyStopCallBack = EarlyStopping(monitor='loss', min_delta=0.00000001, patience=5)
 checkpointCallBack = ModelCheckpoint(modelpath, monitor='loss', period=10)
 
-optimizer = sgd(lr=0.001, momentum=0.9, decay=1e-6)
-model.compile(optimizer = optimizer, loss='mse', metrics = ['mae'])
+# optimizer = sgd(lr=1e-8, momentum=0.9, decay=1e-6)
+# optimizer = adam()
+# model.compile(optimizer = optimizer, loss='mse', metrics = ['mae'])
 
 '''
 ==== File IO + file concatenation
@@ -47,7 +48,7 @@ for method in targetPseudoLabels:
         pseudoLabelFilePathList = getFilePathList(pseudoLabelPath, 'mat')
 
 
-        for i in range(0, 10): #len(stftFilePathList)):
+        for i in range(0, 200): #len(stftFilePathList)):
             tmp = loadmat(cqtFilePathList[i])
             X_song = np.ndarray.transpose(tmp['Xcqt'])
             tmp = loadmat(pseudoLabelFilePathList[i])
@@ -76,7 +77,7 @@ finalRow = np.zeros((1, np.size(X, 1)))
 X_diff = np.concatenate((X_diff, finalRow), axis=0)
 X_all = np.concatenate((X, X_diff), axis=1)
 
-model.fit(X_all, y_all, epochs = 100, batch_size = 640, callbacks=[tbCallBack, checkpointCallBack], shuffle=False)
+model.fit(X_all, y_all, epochs = 50, batch_size = 640, callbacks=[tbCallBack, checkpointCallBack], shuffle=False)
 
 '''
 ==== Save the trained DNN model

@@ -64,7 +64,7 @@ for method in targetPseudoLabels:
         pseudoLabelPath = parentFolder + method + '/' + genre + '/'
         pseudoLabelFilePathList = getFilePathList(pseudoLabelPath, 'mat')
 
-        for i in range(0, 150): #len(stftFilePathList)):
+        for i in range(0, 200): #len(stftFilePathList)):
             tmp = loadmat(cqtFilePathList[i])
             X_song = np.ndarray.transpose(tmp['Xcqt'])
             tmp = loadmat(pseudoLabelFilePathList[i])

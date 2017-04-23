@@ -21,7 +21,7 @@ targetPseudoLabels = ['smt', '200drums']
 #                 'latin-songs',
 #                 'pop-songs',
 #                 'r-b-hip-hop-songs']
-targetGenres = ['hot-mainstream-rock-tracks', 'pop-songs']
+targetGenres = ['hot-mainstream-rock-tracks', 'pop-songs', 'r-b-hip-hop-songs', 'latin-songs']
 parentFolder = '../../unlabeledDrumDataset/activations/'
 # parentFolder = '/Volumes/CW_MBP15/Datasets/unlabeledDrumDataset/activations/'
 savepath = './models/dnn_model_1nn_stft.h5'
@@ -67,7 +67,7 @@ for method in targetPseudoLabels:
         X = np.ndarray((0, 1025))
         Y = np.ndarray((0, 3))
 
-        for i in range(0, 200): #len(stftFilePathList)):
+        for i in range(0, 100): #len(stftFilePathList)):
             tmp = loadmat(stftFilePathList[i])
             X_song = np.ndarray.transpose(tmp['X'])
             tmp = loadmat(pseudoLabelFilePathList[i])
